@@ -5,6 +5,7 @@ import { connectToDB } from "../mongoose";
 import Project from "../models/project.model";
 import User from "../models/user.model";
 import { ObjectId } from "mongoose";
+import { revalidatePath } from "next/cache";
 
 const isProduction = process.env.NODE_ENV === "production";
 const serverUrl = isProduction
@@ -29,10 +30,10 @@ export const createNewProject = async (
   form: ProjectForm,
   creatorId: ObjectId
 ) => {
-  const imageUrl = await uploadImage(form.image);
+  try {
+    const imageUrl = await uploadImage(form.image);
 
-  if (imageUrl.url) {
-    try {
+    if (imageUrl.url) {
       connectToDB();
 
       const createdProject = await Project.create({
@@ -47,10 +48,11 @@ export const createNewProject = async (
       });
 
       console.log("Created Project");
-    } catch (error: any) {
-      console.error(error);
-      throw new Error(`Failed to fetch user: ${error.message}`);
+      revalidatePath("/");
     }
+  } catch (error: any) {
+    console.error(error);
+    throw new Error(`Failed to fetch user: ${error.message}`);
   }
 };
 
@@ -106,11 +108,41 @@ export async function deleteProject(projectId: ObjectId, userId: ObjectId) {
 
     await Project.deleteOne({ _id: projectId });
 
-    console.log(userId);
-
     await User.findByIdAndUpdate(userId, {
       $pull: { projects: { $in: [projectId] } },
     });
+
+    revalidatePath("/");
+  } catch (error: any) {
+    console.error(error);
+    throw new Error(`Failed to delete project: ${error.message}`);
+  }
+}
+
+export async function updateProject(form: any, projectId: string) {
+  function isBase64DataURL(value: string) {
+    const base64Regex = /^data:image\/[a-z]+;base64,/;
+    return base64Regex.test(value);
+  }
+
+  const isUploadingNewImage = isBase64DataURL(form.image);
+
+  let updatedForm = { ...form };
+
+  try {
+    connectToDB();
+
+    if (isUploadingNewImage) {
+      const imageUrl = await uploadImage(form.image);
+
+      if (imageUrl.url) {
+        updatedForm = { ...updatedForm, image: imageUrl.url };
+      }
+    }
+
+    await Project.findByIdAndUpdate(projectId, updatedForm);
+
+    revalidatePath("/");
   } catch (error: any) {
     console.error(error);
     throw new Error(`Failed to delete project: ${error.message}`);

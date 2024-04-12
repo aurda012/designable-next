@@ -10,7 +10,7 @@ import CustomMenu from "./CustomMenu";
 import { categoryFilters } from "@/constants";
 // import { updateProject, createNewProject } from "@/lib/actions";
 import { FormState, ProjectInterface, SessionInterface } from "@/common.types";
-import { createNewProject } from "@/lib/actions/project.actions";
+import { createNewProject, updateProject } from "@/lib/actions/project.actions";
 
 type Props = {
   type: string;
@@ -30,8 +30,6 @@ const ProjectForm = ({ type, session, project }: Props) => {
     githubUrl: project?.githubUrl || "",
     category: project?.category || "",
   });
-
-  console.log(session?.user?._id);
 
   const handleStateChange = (fieldName: keyof FormState, value: string) => {
     setForm((prevForm) => ({ ...prevForm, [fieldName]: value }));
@@ -73,8 +71,8 @@ const ProjectForm = ({ type, session, project }: Props) => {
       }
 
       if (type === "edit") {
-        // await updateProject(form, project?._id as string);
-        // router.push("/");
+        await updateProject(form, project?._id as string);
+        router.push("/");
       }
     } catch (error) {
       alert(

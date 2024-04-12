@@ -11,7 +11,7 @@ export type FormState = {
 };
 
 export interface ProjectInterface {
-  _id: ObjectId;
+  _id: ObjectId | string;
   title: string;
   description: string;
   image: string;
