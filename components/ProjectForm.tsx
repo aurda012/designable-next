@@ -13,10 +13,20 @@ import { FormState, ProjectInterface, SessionInterface } from "@/common.types";
 import { createNewProject, updateProject } from "@/lib/actions/project.actions";
 import { ObjectId } from "mongoose";
 
+interface projectObj {
+  _id: string;
+  title: string;
+  description: string;
+  image: string;
+  liveSiteUrl: string;
+  githubUrl: string;
+  category: string;
+}
+
 type Props = {
   type: string;
   session: SessionInterface;
-  project?: ProjectInterface;
+  project?: projectObj;
 };
 
 const ProjectForm = ({ type, session, project }: Props) => {
