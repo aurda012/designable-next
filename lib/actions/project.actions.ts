@@ -52,3 +52,35 @@ export const createNewProject = async (
     }
   }
 };
+
+export async function fetchProjects(
+  category = null,
+  pageNumber = 1,
+  pageSize = 20
+) {
+  try {
+    connectToDB();
+
+    // Calculate the number of fibers to skip
+    const skipAmount = (pageNumber - 1) * pageSize;
+
+    // Fetch the posts that have no parents (top-level fibers)
+    const findQuery = category ? { category: category } : {};
+    const projectsQuery = Project.find(findQuery)
+      .sort({ createdAt: "desc" })
+      .skip(skipAmount)
+      .limit(pageSize)
+      .populate({ path: "createdBy", model: User });
+
+    const totalProjectsCount = await Project.countDocuments(findQuery);
+
+    const projects = await projectsQuery.exec();
+
+    const isNext = totalProjectsCount > skipAmount + projects.length;
+
+    return { projects, isNext };
+  } catch (error: any) {
+    console.error(error);
+    throw new Error(`Failed to fetch fibers: ${error.message}`);
+  }
+}

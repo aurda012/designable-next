@@ -18,15 +18,7 @@ export interface ProjectInterface {
   liveSiteUrl: string;
   githubUrl: string;
   category: string;
-  createdBy:
-    | {
-        name: string;
-        email: string;
-        avatarUrl: string;
-        id: string;
-        _id: ObjectId;
-      }
-    | ObjectId;
+  createdBy: UserProfile | ObjectId;
 }
 
 export interface UserProfile {
