@@ -1,6 +1,5 @@
-import { ProjectInterface } from "@/common.types";
 import Categories from "@/components/Categories";
-// import LoadMore from "@/components/LoadMore";
+import LoadMore from "@/components/LoadMore";
 import ProjectCard from "@/components/ProjectCard";
 import { fetchProjects } from "@/lib/actions/project.actions";
 
@@ -18,7 +17,7 @@ export const dynamicParams = true;
 export const revalidate = 0;
 
 const Home = async ({ searchParams: { category, page } }: Props) => {
-  const results = await fetchProjects();
+  const results = await fetchProjects(category as string, page ? +page : 1);
 
   const projects = results?.projects || [];
 
@@ -56,12 +55,10 @@ const Home = async ({ searchParams: { category, page } }: Props) => {
         ))}
       </section>
 
-      {/* <LoadMore 
-        startCursor={data?.projectSearch?.pageInfo?.startCursor} 
-        endCursor={data?.projectSearch?.pageInfo?.endCursor} 
-        hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage} 
-        hasNextPage={data?.projectSearch?.pageInfo.hasNextPage}
-      /> */}
+      <LoadMore
+        pageNumber={page ? +page : 1}
+        isNext={results?.isNext || false}
+      />
     </section>
   );
 };

@@ -45,8 +45,6 @@ export const authOptions: NextAuthOptions = {
       try {
         const data = await getUser(email);
 
-        console.log(data);
-
         const newSession = {
           ...session,
           user: {

@@ -30,7 +30,7 @@ export interface UserProfile {
   avatarUrl: string;
   githubUrl: string | null;
   linkedinUrl: string | null;
-  projects: ProjectInterface[] | ObjectId[];
+  projects: ProjectInterface[];
 }
 
 export interface SessionInterface extends Session {

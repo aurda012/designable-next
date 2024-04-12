@@ -57,7 +57,7 @@ export const createNewProject = async (
 };
 
 export async function fetchProjects(
-  category = null,
+  category = "",
   pageNumber = 1,
   pageSize = 20
 ) {
@@ -68,7 +68,7 @@ export async function fetchProjects(
     const skipAmount = (pageNumber - 1) * pageSize;
 
     // Fetch the posts that have no parents (top-level fibers)
-    const findQuery = category ? { category: category } : {};
+    const findQuery = category !== "" ? { category: category } : {};
     const projectsQuery = Project.find(findQuery)
       .sort({ createdAt: "desc" })
       .skip(skipAmount)

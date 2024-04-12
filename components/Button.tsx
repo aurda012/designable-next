@@ -10,6 +10,7 @@ type Props = {
   type?: "button" | "submit";
   bgColor?: string;
   textColor?: string;
+  disabled?: boolean | false;
 };
 
 const Button = ({
@@ -21,10 +22,11 @@ const Button = ({
   type,
   bgColor,
   textColor,
+  disabled,
 }: Props) => (
   <button
     type={type || "button"}
-    disabled={submitting || false}
+    disabled={submitting || disabled || false}
     className={`flexCenter gap-3 px-4 py-3 
         ${textColor ? textColor : "text-white"} 
         ${
