@@ -6,16 +6,16 @@ import { getUserProjects } from "@/lib/actions/user.actions";
 import { ObjectId } from "mongoose";
 
 type Props = {
-  userId: ObjectId;
-  projectId: ObjectId;
+  userId: string;
+  projectId: string;
 };
 
 const RelatedProjects = async ({ userId, projectId }: Props) => {
-  const user = await getUserProjects(userId);
+  const user = await getUserProjects(JSON.parse(userId));
 
-  const filteredProjects = user?.projects?.filter(
-    (project) => JSON.stringify(project._id) !== JSON.stringify(projectId)
-  );
+  const filteredProjects = user?.projects?.filter((project) => {
+    JSON.stringify(project._id) !== JSON.stringify(projectId);
+  });
 
   if (filteredProjects?.length === 0) return null;
 
@@ -24,7 +24,7 @@ const RelatedProjects = async ({ userId, projectId }: Props) => {
       <div className="flexBetween">
         <p className="text-base font-bold">More by {user?.name}</p>
         <Link
-          href={`/profile/${user?.id}`}
+          href={`/profile/${user?._id}`}
           className="text-primary-purple text-base"
         >
           View All

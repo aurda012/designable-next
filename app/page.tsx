@@ -43,7 +43,7 @@ const Home = async ({ searchParams: { category, page } }: Props) => {
           <ProjectCard
             key={`${project?._id}`}
             // @ts-ignore
-            id={project?._id}
+            id={JSON.stringify(project?._id)}
             image={project?.image}
             title={project?.title}
             // @ts-ignore
@@ -51,7 +51,7 @@ const Home = async ({ searchParams: { category, page } }: Props) => {
             // @ts-ignore
             avatarUrl={project?.createdBy?.avatarUrl}
             // @ts-ignore
-            userId={project?.createdBy?._id}
+            userId={JSON.stringify(project?.createdBy?._id)}
           />
         ))}
       </section>

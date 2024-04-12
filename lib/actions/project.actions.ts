@@ -28,7 +28,7 @@ export const uploadImage = async (imagePath: string) => {
 
 export const createNewProject = async (
   form: ProjectForm,
-  creatorId: ObjectId
+  createdBy: ObjectId
 ) => {
   try {
     const imageUrl = await uploadImage(form.image);
@@ -39,11 +39,11 @@ export const createNewProject = async (
       const createdProject = await Project.create({
         ...form,
         image: imageUrl.url,
-        createdBy: creatorId,
+        createdBy: createdBy,
       });
 
       // Update User model
-      await User.findByIdAndUpdate(creatorId, {
+      await User.findByIdAndUpdate(createdBy, {
         $push: { projects: createdProject._id },
       });
 
@@ -102,11 +102,11 @@ export async function getProjectDetails(id: string) {
   }
 }
 
-export async function deleteProject(projectId: ObjectId, userId: ObjectId) {
+export async function deleteProject(projectId: string, userId: string) {
   try {
     connectToDB();
 
-    await Project.deleteOne({ _id: projectId });
+    await Project.findByIdAndDelete(projectId);
 
     await User.findByIdAndUpdate(userId, {
       $pull: { projects: { $in: [projectId] } },

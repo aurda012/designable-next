@@ -2,7 +2,7 @@ import mongoose, { ObjectId } from "mongoose";
 import { User } from "./user.model";
 
 export interface Project {
-  _id: ObjectId;
+  _id: ObjectId | string;
   title: string;
   description: string;
   image: string;
@@ -13,7 +13,6 @@ export interface Project {
 }
 
 export const projectSchema = new mongoose.Schema<Project>({
-  _id: { type: mongoose.Schema.Types.ObjectId },
   title: { type: String, required: true },
   description: { type: String, required: true },
   image: { type: String, required: true },

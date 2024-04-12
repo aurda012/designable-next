@@ -22,7 +22,7 @@ export interface ProjectInterface {
 }
 
 export interface UserProfile {
-  _id: ObjectId;
+  _id: ObjectId | string;
   id: string;
   name: string;
   email: string;

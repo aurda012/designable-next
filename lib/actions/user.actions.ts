@@ -40,7 +40,7 @@ export async function getUser(email: string) {
   }
 }
 
-export async function getUserProjects(id: ObjectId) {
+export async function getUserProjects(id: string) {
   try {
     connectToDB();
 

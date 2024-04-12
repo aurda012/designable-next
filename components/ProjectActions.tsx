@@ -8,8 +8,8 @@ import { ObjectId } from "mongoose";
 import { deleteProject } from "@/lib/actions/project.actions";
 
 type Props = {
-  projectId: ObjectId;
-  userId: ObjectId;
+  projectId: string;
+  userId: string;
 };
 
 const ProjectActions = ({ projectId, userId }: Props) => {

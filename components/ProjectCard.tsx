@@ -6,12 +6,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type Props = {
-  id: ObjectId;
+  id: string;
   image: string;
   title: string;
   name: string;
   avatarUrl: string;
-  userId: ObjectId;
+  userId: string;
 };
 
 const ProjectCard = ({ id, image, title, name, avatarUrl, userId }: Props) => {
@@ -28,7 +28,7 @@ const ProjectCard = ({ id, image, title, name, avatarUrl, userId }: Props) => {
   return (
     <div className="flexCenter flex-col rounded-2xl drop-shadow-card">
       <Link
-        href={`/project/${id}`}
+        href={`/project/${JSON.parse(id)}`}
         className="flexCenter group relative w-full h-full"
       >
         <Image
@@ -45,7 +45,7 @@ const ProjectCard = ({ id, image, title, name, avatarUrl, userId }: Props) => {
       </Link>
 
       <div className="flexBetween w-full px-2 mt-3 font-semibold text-sm">
-        <Link href={`/profile/${userId}`}>
+        <Link href={`/profile/${JSON.parse(userId)}`}>
           <div className="flexCenter gap-2">
             <Image
               src={avatarUrl}
