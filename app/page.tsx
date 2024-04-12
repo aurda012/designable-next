@@ -47,11 +47,11 @@ const Home = async ({ searchParams: { category, page } }: Props) => {
             image={project?.image}
             title={project?.title}
             // @ts-ignore
-            name={project?.createdBy.name}
+            name={project?.createdBy?.name}
             // @ts-ignore
-            avatarUrl={project?.createdBy.avatarUrl}
+            avatarUrl={project?.createdBy?.avatarUrl}
             // @ts-ignore
-            userId={project?.createdBy.id}
+            userId={project?.createdBy?._id}
           />
         ))}
       </section>

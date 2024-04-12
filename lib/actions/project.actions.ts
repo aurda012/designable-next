@@ -1,9 +1,10 @@
 "use server";
 
-import { ProjectForm } from "@/common.types";
+import { ProjectForm, ProjectInterface } from "@/common.types";
 import { connectToDB } from "../mongoose";
 import Project from "../models/project.model";
 import User from "../models/user.model";
+import { ObjectId } from "mongoose";
 
 const isProduction = process.env.NODE_ENV === "production";
 const serverUrl = isProduction
@@ -26,7 +27,7 @@ export const uploadImage = async (imagePath: string) => {
 
 export const createNewProject = async (
   form: ProjectForm,
-  creatorId: string
+  creatorId: ObjectId
 ) => {
   const imageUrl = await uploadImage(form.image);
 
@@ -82,5 +83,36 @@ export async function fetchProjects(
   } catch (error: any) {
     console.error(error);
     throw new Error(`Failed to fetch fibers: ${error.message}`);
+  }
+}
+
+export async function getProjectDetails(id: string) {
+  try {
+    connectToDB();
+
+    return await Project.findById(id).populate({
+      path: "createdBy",
+      model: User,
+    });
+  } catch (error: any) {
+    console.error(error);
+    throw new Error(`Failed to fetch project: ${error.message}`);
+  }
+}
+
+export async function deleteProject(projectId: ObjectId, userId: ObjectId) {
+  try {
+    connectToDB();
+
+    await Project.deleteOne({ _id: projectId });
+
+    console.log(userId);
+
+    await User.findByIdAndUpdate(userId, {
+      $pull: { projects: { $in: [projectId] } },
+    });
+  } catch (error: any) {
+    console.error(error);
+    throw new Error(`Failed to delete project: ${error.message}`);
   }
 }

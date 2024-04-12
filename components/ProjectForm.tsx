@@ -31,6 +31,8 @@ const ProjectForm = ({ type, session, project }: Props) => {
     category: project?.category || "",
   });
 
+  console.log(session?.user?._id);
+
   const handleStateChange = (fieldName: keyof FormState, value: string) => {
     setForm((prevForm) => ({ ...prevForm, [fieldName]: value }));
   };
@@ -66,7 +68,7 @@ const ProjectForm = ({ type, session, project }: Props) => {
 
     try {
       if (type === "create") {
-        await createNewProject(form, session?.user?.id);
+        await createNewProject(form, session?.user?._id);
         router.push("/");
       }
 

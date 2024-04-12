@@ -1,16 +1,19 @@
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
+import { User } from "./user.model";
 
 export interface Project {
+  _id: ObjectId;
   title: string;
   description: string;
   image: string;
   liveSiteUrl: string;
   githubUrl: string;
   category: string;
-  createdBy: mongoose.Schema.Types.ObjectId;
+  createdBy: User;
 }
 
-const projectSchema = new mongoose.Schema<Project>({
+export const projectSchema = new mongoose.Schema<Project>({
+  _id: { type: mongoose.Schema.Types.ObjectId },
   title: { type: String, required: true },
   description: { type: String, required: true },
   image: { type: String, required: true },

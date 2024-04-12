@@ -1,7 +1,9 @@
 "use server";
 
+import { ObjectId } from "mongoose";
 import User from "../models/user.model";
 import { connectToDB } from "../mongoose";
+import Project from "../models/project.model";
 
 export async function createUser(
   id: string,
@@ -32,6 +34,20 @@ export async function getUser(email: string) {
     console.log("Get User");
 
     return await User.findOne({ email: email });
+  } catch (error: any) {
+    console.error(error);
+    throw new Error(`Failed to fetch user: ${error.message}`);
+  }
+}
+
+export async function getUserProjects(id: ObjectId) {
+  try {
+    connectToDB();
+
+    return await User.findById(id).populate({
+      path: "projects",
+      model: Project,
+    });
   } catch (error: any) {
     console.error(error);
     throw new Error(`Failed to fetch user: ${error.message}`);
