@@ -6,7 +6,7 @@
   <div>
     <img src="https://img.shields.io/badge/-Next_JS-black?style=for-the-badge&logoColor=white&logo=nextdotjs&color=000000" alt="nextdotjs" />
     <img src="https://img.shields.io/badge/-Cloudinary-black?style=for-the-badge&logoColor=white&logo=cloudinary&color=3448C5" alt="cloudinary" />
-    <img src="https://img.shields.io/badge/-Graphql-black?style=for-the-badge&logoColor=white&logo=graphql&color=E10098" alt="graphql" />
+    <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="mongodb" />
     <img src="https://img.shields.io/badge/-JSON_Web_Tokens-black?style=for-the-badge&logoColor=white&logo=jsonwebtokens&color=000000" alt="jsonwebtokens" />
     <img src="https://img.shields.io/badge/-Typescript-black?style=for-the-badge&logoColor=white&logo=typescript&color=3178C6" alt="typescript" />
     <img src="https://img.shields.io/badge/-Tailwind_CSS-black?style=for-the-badge&logoColor=white&logo=tailwindcss&color=06B6D4" alt="tailwindcss" />
@@ -36,8 +36,8 @@ A full stack Dribble clone developed using Next.js, GraphQL, Next Auth, TypeScri
 - Next Auth
 - TypeScript
 - JSON Web Token
-- GraphQL
-- Grafbase
+- MongoDB
+- Mongoose
 - Cloudinary
 - Tailwind CSS
 - Headless UI
@@ -96,15 +96,15 @@ npm install
 Create a new file named `.env` in the root of your project and add the following content:
 
 ```env
+MONGODB_URL=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 NEXTAUTH_URL=
 NEXTAUTH_SECRET=
+NEXT_PUBLIC_SERVER_URL=
 CLOUDINARY_NAME=
 CLOUDINARY_KEY=
 CLOUDINARY_SECRET=
-GRAFBASE_API_URL=
-GRAFBASE_API_KEY=
 ```
 
 Replace the placeholder values with your actual credentials. You can obtain these credentials by signing up on the corresponding websites from [Google Cloud](https://console.cloud.google.com), [Cloudinary](https://cloudinary.com/), and [Grafbase](https://grafbase.com/).
@@ -126,6 +126,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to view the 
 
 ```typescript
 import { User, Session } from "next-auth";
+import { ObjectId } from "mongoose";
 
 export type FormState = {
   title: string;
@@ -137,22 +138,18 @@ export type FormState = {
 };
 
 export interface ProjectInterface {
+  _id: ObjectId | string;
   title: string;
   description: string;
   image: string;
   liveSiteUrl: string;
   githubUrl: string;
   category: string;
-  id: string;
-  createdBy: {
-    name: string;
-    email: string;
-    avatarUrl: string;
-    id: string;
-  };
+  createdBy: UserProfile | ObjectId;
 }
 
 export interface UserProfile {
+  _id: ObjectId | string;
   id: string;
   name: string;
   email: string;
@@ -160,19 +157,12 @@ export interface UserProfile {
   avatarUrl: string;
   githubUrl: string | null;
   linkedinUrl: string | null;
-  projects: {
-    edges: { node: ProjectInterface }[];
-    pageInfo: {
-      hasPreviousPage: boolean;
-      hasNextPage: boolean;
-      startCursor: string;
-      endCursor: string;
-    };
-  };
+  projects: ProjectInterface[];
 }
 
 export interface SessionInterface extends Session {
   user: User & {
+    _id: ObjectId;
     id: string;
     name: string;
     email: string;
@@ -469,156 +459,6 @@ body {
 </details>
 
 <details>
-<summary><code>graphqlQueriesAndMutations.ts</code></summary>
-
-```typescript
-export const createProjectMutation = `
-	mutation CreateProject($input: ProjectCreateInput!) {
-		projectCreate(input: $input) {
-			project {
-				id
-				title
-				description
-				createdBy {
-					email
-					name
-				}
-			}
-		}
-	}
-`;
-
-export const updateProjectMutation = `
-	mutation UpdateProject($id: ID!, $input: ProjectUpdateInput!) {
-		projectUpdate(by: { id: $id }, input: $input) {
-			project {
-				id
-				title
-				description
-				createdBy {
-					email
-					name
-				}
-			}
-		}
-	}
-`;
-
-export const deleteProjectMutation = `
-  mutation DeleteProject($id: ID!) {
-    projectDelete(by: { id: $id }) {
-      deletedId
-    }
-  }
-`;
-
-export const createUserMutation = `
-	mutation CreateUser($input: UserCreateInput!) {
-		userCreate(input: $input) {
-			user {
-				name
-				email
-				avatarUrl
-				description
-				githubUrl
-				linkedinUrl
-				id
-			}
-		}
-	}
-`;
-
-export const projectsQuery = `
-  query getProjects($category: String, $endCursor: String) {
-    projectSearch(first: 8, after: $endCursor, filter: {category: {eq: $category}}) {
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-        startCursor
-        endCursor
-      }
-      edges {
-        node {
-          title
-          githubUrl
-          description
-          liveSiteUrl
-          id
-          image
-          category
-          createdBy {
-            id
-            email
-            name
-            avatarUrl
-          }
-        }
-      }
-    }
-  }
-`;
-
-export const getProjectByIdQuery = `
-  query GetProjectById($id: ID!) {
-    project(by: { id: $id }) {
-      id
-      title
-      description
-      image
-      liveSiteUrl
-      githubUrl
-      category
-      createdBy {
-        id
-        name
-        email
-        avatarUrl
-      }
-    }
-  }
-`;
-
-export const getUserQuery = `
-  query GetUser($email: String!) {
-    user(by: { email: $email }) {
-      id
-      name
-      email
-      avatarUrl
-      description
-      githubUrl
-      linkedinUrl
-    }
-  }
-`;
-
-export const getProjectsOfUserQuery = `
-  query getUserProjects($id: ID!, $last: Int = 4) {
-    user(by: { id: $id }) {
-      id
-      name
-      email
-      description
-      avatarUrl
-      githubUrl
-      linkedinUrl
-      projects(last: $last) {
-        edges {
-          node {
-            id
-            title
-            image
-          }
-        }
-      }
-    }
-  }
-`;
-```
-
-</details>
-
-<details>
 <summary><code>ProfileMenu.tsx</code></summary>
 
 ```typescript
@@ -758,7 +598,7 @@ const ProfilePage = ({ user }: Props) => (
         />
         <p className="text-4xl font-bold mt-10">{user?.name}</p>
         <p className="md:text-5xl text-3xl font-extrabold md:mt-10 mt-5 max-w-lg">
-          I’m Software Engineer at JSM 👋
+          I’m a Software Engineer 👋
         </p>
 
         <div className="flex mt-8 gap-5 w-full flex-wrap">
@@ -774,9 +614,9 @@ const ProfilePage = ({ user }: Props) => (
         </div>
       </div>
 
-      {user?.projects?.edges?.length > 0 ? (
+      {user?.projects?.length > 0 ? (
         <Image
-          src={user?.projects?.edges[0]?.node?.image}
+          src={user?.projects[0]?.image}
           alt="project image"
           width={739}
           height={554}
@@ -797,12 +637,12 @@ const ProfilePage = ({ user }: Props) => (
       <p className="w-full text-left text-lg font-semibold">Recent Work</p>
 
       <div className="profile_projects">
-        {user?.projects?.edges?.map(({ node }: { node: ProjectInterface }) => (
+        {user?.projects?.map((project) => (
           <ProjectCard
-            key={`${node?.id}`}
-            id={node?.id}
-            image={node?.image}
-            title={node?.title}
+            key={`${project?._id}`}
+            id={JSON.stringify(project?._id)}
+            image={project?.image}
+            title={project?.title}
             name={user.name}
             avatarUrl={user.avatarUrl}
             userId={user.id}
@@ -819,32 +659,26 @@ export default ProfilePage;
 </details>
 
 <details>
-<summary><code>projectPage.tsx</code></summary>
+<summary><code>Project.tsx</code></summary>
 
 ```typescript
 import Image from "next/image";
 import Link from "next/link";
 
 import { getCurrentUser } from "@/lib/session";
-import { getProjectDetails } from "@/lib/actions";
 import Modal from "@/components/Modal";
-// import ProjectActions from "@/components/ProjectActions"
-import RelatedProjects from "@/components/RelatedProjects";
-import { ProjectInterface } from "@/common.types";
 import ProjectActions from "@/components/ProjectActions";
+import RelatedProjects from "@/components/RelatedProjects";
+import { getProjectDetails } from "@/lib/actions/project.actions";
 
 const Project = async ({ params: { id } }: { params: { id: string } }) => {
   const session = await getCurrentUser();
-  const result = (await getProjectDetails(id)) as {
-    project?: ProjectInterface;
-  };
+  const project = await getProjectDetails(id);
 
-  if (!result?.project)
+  if (!project)
     return <p className="no-result-text">Failed to fetch project info</p>;
 
-  const projectDetails = result?.project;
-
-  const renderLink = () => `/profile/${projectDetails?.createdBy?.id}`;
+  const renderLink = () => `/profile/${project?.createdBy?._id}`;
 
   return (
     <Modal>
@@ -852,7 +686,7 @@ const Project = async ({ params: { id } }: { params: { id: string } }) => {
         <div className="flex-1 flex items-start gap-5 w-full max-xs:flex-col">
           <Link href={renderLink()}>
             <Image
-              src={projectDetails?.createdBy?.avatarUrl}
+              src={project?.createdBy?.avatarUrl}
               width={50}
               height={50}
               alt="profile"
@@ -861,32 +695,33 @@ const Project = async ({ params: { id } }: { params: { id: string } }) => {
           </Link>
 
           <div className="flex-1 flexStart flex-col gap-1">
-            <p className="self-start text-lg font-semibold">
-              {projectDetails?.title}
-            </p>
+            <p className="self-start text-lg font-semibold">{project?.title}</p>
             <div className="user-info">
-              <Link href={renderLink()}>{projectDetails?.createdBy?.name}</Link>
+              <Link href={renderLink()}>{project?.createdBy?.name}</Link>
               <Image src="/dot.svg" width={4} height={4} alt="dot" />
               <Link
-                href={`/?category=${projectDetails.category}`}
+                href={`/?category=${project?.category}`}
                 className="text-primary-purple font-semibold"
               >
-                {projectDetails?.category}
+                {project?.category}
               </Link>
             </div>
           </div>
         </div>
 
-        {session?.user?.email === projectDetails?.createdBy?.email && (
+        {session?.user?.email === project?.createdBy?.email && (
           <div className="flex justify-end items-center gap-2">
-            <ProjectActions projectId={projectDetails?.id} />
+            <ProjectActions
+              projectId={id}
+              userId={JSON.stringify(session?.user?._id)}
+            />
           </div>
         )}
       </section>
 
       <section className="mt-14">
         <Image
-          src={`${projectDetails?.image}`}
+          src={`${project?.image}`}
           className="object-cover rounded-2xl"
           width={1064}
           height={798}
@@ -895,13 +730,11 @@ const Project = async ({ params: { id } }: { params: { id: string } }) => {
       </section>
 
       <section className="flexCenter flex-col mt-20">
-        <p className="max-w-5xl text-xl font-normal">
-          {projectDetails?.description}
-        </p>
+        <p className="max-w-5xl text-xl font-normal">{project?.description}</p>
 
         <div className="flex flex-wrap mt-5 gap-5">
           <Link
-            href={projectDetails?.githubUrl}
+            href={project?.githubUrl}
             target="_blank"
             rel="noreferrer"
             className="flexCenter gap-2 tex-sm font-medium text-primary-purple"
@@ -910,7 +743,7 @@ const Project = async ({ params: { id } }: { params: { id: string } }) => {
           </Link>
           <Image src="/dot.svg" width={4} height={4} alt="dot" />
           <Link
-            href={projectDetails?.liveSiteUrl}
+            href={project?.liveSiteUrl}
             target="_blank"
             rel="noreferrer"
             className="flexCenter gap-2 tex-sm font-medium text-primary-purple"
@@ -924,7 +757,7 @@ const Project = async ({ params: { id } }: { params: { id: string } }) => {
         <span className="w-full h-0.5 bg-light-white-200" />
         <Link href={renderLink()} className="min-w-[82px] h-[82px]">
           <Image
-            src={projectDetails?.createdBy?.avatarUrl}
+            src={project?.createdBy?.avatarUrl}
             className="rounded-full"
             width={82}
             height={82}
@@ -935,8 +768,8 @@ const Project = async ({ params: { id } }: { params: { id: string } }) => {
       </section>
 
       <RelatedProjects
-        userId={projectDetails?.createdBy?.id}
-        projectId={projectDetails?.id}
+        userId={JSON.stringify(session?.user?._id)}
+        projectId={id}
       />
     </Modal>
   );

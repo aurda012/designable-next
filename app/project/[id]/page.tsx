@@ -5,9 +5,7 @@ import { getCurrentUser } from "@/lib/session";
 import Modal from "@/components/Modal";
 import ProjectActions from "@/components/ProjectActions";
 import RelatedProjects from "@/components/RelatedProjects";
-import { ProjectInterface } from "@/common.types";
 import { getProjectDetails } from "@/lib/actions/project.actions";
-import { ObjectId } from "mongoose";
 
 const Project = async ({ params: { id } }: { params: { id: string } }) => {
   const session = await getCurrentUser();
