@@ -10,7 +10,7 @@ import { revalidatePath } from "next/cache";
 const isProduction = process.env.NODE_ENV === "production";
 const serverUrl = isProduction
   ? process.env.NEXT_PUBLIC_SERVER_URL
-  : "http://localhost:3000";
+  : "https://designable-next.vercel.app";
 
 export const uploadImage = async (imagePath: string) => {
   try {
