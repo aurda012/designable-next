@@ -12,7 +12,7 @@ export async function createUser(
   avatarUrl: string
 ) {
   try {
-    connectToDB();
+    await connectToDB();
 
     await User.create({
       id: id,
@@ -28,7 +28,7 @@ export async function createUser(
 
 export async function getUser(email: string) {
   try {
-    connectToDB();
+    await connectToDB();
 
     console.log("Get User");
 
@@ -42,7 +42,7 @@ export async function getUser(email: string) {
 
 export async function getUserProjects(id: string) {
   try {
-    connectToDB();
+    await connectToDB();
 
     const user = User.findById(id).populate({
       path: "projects",

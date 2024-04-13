@@ -31,7 +31,7 @@ export const createNewProject = async (form: ProjectForm, userId: string) => {
     const imageUrl = await uploadImage(form.image);
 
     if (imageUrl.url) {
-      connectToDB();
+      await connectToDB();
 
       const createdBy = await User.findById(userId);
 
@@ -60,7 +60,7 @@ export async function fetchProjects(
   pageSize = 20
 ) {
   try {
-    connectToDB();
+    await connectToDB();
 
     // Calculate the number of fibers to skip
     const skipAmount = (pageNumber - 1) * pageSize;
@@ -87,7 +87,7 @@ export async function fetchProjects(
 
 export async function getProjectDetails(id: string) {
   try {
-    connectToDB();
+    await connectToDB();
 
     const project = await Project.findById(id).populate({
       path: "createdBy",
@@ -101,7 +101,7 @@ export async function getProjectDetails(id: string) {
 
 export async function deleteProject(projectId: string, userId: string) {
   try {
-    connectToDB();
+    await connectToDB();
 
     await Project.findByIdAndDelete(projectId);
 
@@ -126,7 +126,7 @@ export async function updateProject(form: any, projectId: string) {
   let updatedForm = { ...form };
 
   try {
-    connectToDB();
+    await connectToDB();
 
     if (isUploadingNewImage) {
       const imageUrl = await uploadImage(form.image);

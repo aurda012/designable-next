@@ -4,9 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import Button from "./Button";
 import ProjectCard from "./ProjectCard";
+import { User } from "@/lib/database/models/user.model";
 
 type Props = {
-  user: UserProfile;
+  user: User;
 };
 
 const ProfilePage = ({ user }: Props) => (
@@ -64,7 +65,7 @@ const ProfilePage = ({ user }: Props) => (
         {user?.projects?.map((project) => (
           <ProjectCard
             key={`${project?._id}`}
-            id={project?._id}
+            id={JSON.stringify(project?._id)}
             image={project?.image}
             title={project?.title}
             name={user.name}
