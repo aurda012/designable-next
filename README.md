@@ -126,7 +126,6 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to view the 
 
 ```typescript
 import { User, Session } from "next-auth";
-import { ObjectId } from "mongoose";
 
 export type FormState = {
   title: string;
@@ -138,18 +137,18 @@ export type FormState = {
 };
 
 export interface ProjectInterface {
-  _id: ObjectId | string;
+  _id: string;
   title: string;
   description: string;
   image: string;
   liveSiteUrl: string;
   githubUrl: string;
   category: string;
-  createdBy: UserProfile | ObjectId;
+  createdBy: UserProfile;
 }
 
 export interface UserProfile {
-  _id: ObjectId | string;
+  _id: string;
   id: string;
   name: string;
   email: string;
@@ -162,7 +161,7 @@ export interface UserProfile {
 
 export interface SessionInterface extends Session {
   user: User & {
-    _id: ObjectId;
+    _id: string;
     id: string;
     name: string;
     email: string;
@@ -574,15 +573,15 @@ export default ProfileMenu;
 <summary><code>ProfilePage.tsx</code></summary>
 
 ```typescript
-import { ProjectInterface, UserProfile } from "@/common.types";
 import Image from "next/image";
 
 import Link from "next/link";
 import Button from "./Button";
 import ProjectCard from "./ProjectCard";
+import { User } from "@/lib/database/models/user.model";
 
 type Props = {
-  user: UserProfile;
+  user: User;
 };
 
 const ProfilePage = ({ user }: Props) => (
@@ -711,10 +710,7 @@ const Project = async ({ params: { id } }: { params: { id: string } }) => {
 
         {session?.user?.email === project?.createdBy?.email && (
           <div className="flex justify-end items-center gap-2">
-            <ProjectActions
-              projectId={id}
-              userId={JSON.stringify(session?.user?._id)}
-            />
+            <ProjectActions projectId={id} userId={session?.user?._id} />
           </div>
         )}
       </section>
@@ -767,10 +763,7 @@ const Project = async ({ params: { id } }: { params: { id: string } }) => {
         <span className="w-full h-0.5 bg-light-white-200" />
       </section>
 
-      <RelatedProjects
-        userId={JSON.stringify(session?.user?._id)}
-        projectId={id}
-      />
+      <RelatedProjects userId={session?.user?._id} projectId={id} />
     </Modal>
   );
 };
