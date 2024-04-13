@@ -1,16 +1,16 @@
 "use server";
 
 import { ProjectForm, ProjectInterface } from "@/common.types";
-import { connectToDB } from "../mongoose";
-import Project from "../models/project.model";
-import User from "../models/user.model";
-import { ObjectId } from "mongoose";
+import { connectToDB } from "../database/mongoose";
+import Project from "../database/models/project.model";
+import User from "../database/models/user.model";
 import { revalidatePath } from "next/cache";
+import { handleError } from "../utils";
 
 const isProduction = process.env.NODE_ENV === "production";
 const serverUrl = isProduction
   ? process.env.NEXT_PUBLIC_SERVER_URL
-  : "https://designable-next.vercel.app";
+  : "http://localhost:3000";
 
 export const uploadImage = async (imagePath: string) => {
   try {
@@ -22,28 +22,27 @@ export const uploadImage = async (imagePath: string) => {
     });
     return response.json();
   } catch (err) {
-    throw err;
+    handleError(err);
   }
 };
 
-export const createNewProject = async (
-  form: ProjectForm,
-  createdBy: ObjectId
-) => {
+export const createNewProject = async (form: ProjectForm, userId: string) => {
   try {
     const imageUrl = await uploadImage(form.image);
 
     if (imageUrl.url) {
       connectToDB();
 
+      const createdBy = await User.findById(userId);
+
       const createdProject = await Project.create({
         ...form,
         image: imageUrl.url,
-        createdBy: createdBy,
+        createdBy: createdBy._id,
       });
 
       // Update User model
-      await User.findByIdAndUpdate(createdBy, {
+      await User.findByIdAndUpdate(createdBy._id, {
         $push: { projects: createdProject._id },
       });
 
@@ -51,8 +50,7 @@ export const createNewProject = async (
       revalidatePath("/");
     }
   } catch (error: any) {
-    console.error(error);
-    throw new Error(`Failed to fetch user: ${error.message}`);
+    handleError(error);
   }
 };
 
@@ -81,10 +79,9 @@ export async function fetchProjects(
 
     const isNext = totalProjectsCount > skipAmount + projects.length;
 
-    return { projects, isNext };
+    return { projects: JSON.parse(JSON.stringify(projects)), isNext };
   } catch (error: any) {
-    console.error(error);
-    throw new Error(`Failed to fetch fibers: ${error.message}`);
+    handleError(error);
   }
 }
 
@@ -92,13 +89,13 @@ export async function getProjectDetails(id: string) {
   try {
     connectToDB();
 
-    return await Project.findById(id).populate({
+    const project = await Project.findById(id).populate({
       path: "createdBy",
       model: User,
     });
+    return JSON.parse(JSON.stringify(project));
   } catch (error: any) {
-    console.error(error);
-    throw new Error(`Failed to fetch project: ${error.message}`);
+    handleError(error);
   }
 }
 
@@ -114,8 +111,7 @@ export async function deleteProject(projectId: string, userId: string) {
 
     revalidatePath("/");
   } catch (error: any) {
-    console.error(error);
-    throw new Error(`Failed to delete project: ${error.message}`);
+    handleError(error);
   }
 }
 
@@ -144,7 +140,6 @@ export async function updateProject(form: any, projectId: string) {
 
     revalidatePath("/");
   } catch (error: any) {
-    console.error(error);
-    throw new Error(`Failed to delete project: ${error.message}`);
+    handleError(error);
   }
 }

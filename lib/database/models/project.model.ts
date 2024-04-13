@@ -1,8 +1,7 @@
-import mongoose, { ObjectId } from "mongoose";
+import { Document, Schema, model, models } from "mongoose";
 import { User } from "./user.model";
 
-export interface Project {
-  _id: ObjectId | string;
+export interface Project extends Document {
   title: string;
   description: string;
   image: string;
@@ -12,7 +11,7 @@ export interface Project {
   createdBy: User;
 }
 
-export const projectSchema = new mongoose.Schema<Project>({
+export const projectSchema = new Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
   image: { type: String, required: true },
@@ -20,14 +19,11 @@ export const projectSchema = new mongoose.Schema<Project>({
   githubUrl: { type: String, required: true },
   category: { type: String, required: true },
   createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "User",
   },
 });
 
-const Project =
-  mongoose.models && "Project" in mongoose.models
-    ? (mongoose.models.Project as mongoose.Model<Project>)
-    : mongoose.model("Project", projectSchema);
+const Project = models?.Project || model("Project", projectSchema);
 
 export default Project;

@@ -2,6 +2,7 @@ import Categories from "@/components/Categories";
 import LoadMore from "@/components/LoadMore";
 import ProjectCard from "@/components/ProjectCard";
 import { fetchProjects } from "@/lib/actions/project.actions";
+import { Project } from "@/lib/database/models/project.model";
 
 type SearchParams = {
   category?: string | null;
@@ -38,11 +39,11 @@ const Home = async ({ searchParams: { category, page } }: Props) => {
       <Categories />
 
       <section className="projects-grid">
-        {projects.map((project) => (
+        {projects.map((project: Project) => (
           <ProjectCard
             key={`${project?._id}`}
             // @ts-ignore
-            id={JSON.stringify(project?._id)}
+            id={project?._id}
             image={project?.image}
             title={project?.title}
             // @ts-ignore
@@ -50,7 +51,7 @@ const Home = async ({ searchParams: { category, page } }: Props) => {
             // @ts-ignore
             avatarUrl={project?.createdBy?.avatarUrl}
             // @ts-ignore
-            userId={JSON.stringify(project?.createdBy?._id)}
+            userId={project?.createdBy?._id}
           />
         ))}
       </section>

@@ -8,10 +8,8 @@ import FormField from "./FormField";
 import Button from "./Button";
 import CustomMenu from "./CustomMenu";
 import { categoryFilters } from "@/constants";
-// import { updateProject, createNewProject } from "@/lib/actions";
-import { FormState, ProjectInterface, SessionInterface } from "@/common.types";
+import { FormState, SessionInterface } from "@/common.types";
 import { createNewProject, updateProject } from "@/lib/actions/project.actions";
-import { ObjectId } from "mongoose";
 
 interface projectObj {
   _id: string;

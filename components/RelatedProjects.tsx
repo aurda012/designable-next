@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ProjectInterface, UserProfile } from "@/common.types";
 import Image from "next/image";
 import { getUserProjects } from "@/lib/actions/user.actions";
-import { ObjectId } from "mongoose";
+import { Project } from "@/lib/database/models/project.model";
 
 type Props = {
   userId: string;
@@ -11,20 +11,22 @@ type Props = {
 };
 
 const RelatedProjects = async ({ userId, projectId }: Props) => {
-  const user = await getUserProjects(JSON.parse(userId));
+  const user = await getUserProjects(userId);
 
-  const filteredProjects = user?.projects?.filter((project) => {
-    JSON.stringify(project._id) !== JSON.stringify(projectId);
+  const projects = JSON.parse(JSON.stringify(user?.projects)) || [];
+
+  if (projects?.length === 0) return null;
+
+  const filteredProjects = projects.filter((project: Project) => {
+    project._id !== projectId;
   });
-
-  if (filteredProjects?.length === 0) return null;
 
   return (
     <section className="flex flex-col mt-32 w-full">
       <div className="flexBetween">
         <p className="text-base font-bold">More by {user?.name}</p>
         <Link
-          href={`/profile/${user?._id}`}
+          href={`/profile/${JSON.stringify(user?._id)}`}
           className="text-primary-purple text-base"
         >
           View All
@@ -32,7 +34,7 @@ const RelatedProjects = async ({ userId, projectId }: Props) => {
       </div>
 
       <div className="related_projects-grid">
-        {filteredProjects?.map((project) => (
+        {filteredProjects?.map((project: Project) => (
           <div className="flexCenter related_project-card drop-shadow-card">
             <Link
               href={`/project/${project?._id}`}

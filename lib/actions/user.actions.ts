@@ -1,9 +1,9 @@
 "use server";
 
-import { ObjectId } from "mongoose";
-import User from "../models/user.model";
-import { connectToDB } from "../mongoose";
-import Project from "../models/project.model";
+import User from "../database/models/user.model";
+import { connectToDB } from "../database/mongoose";
+import Project from "../database/models/project.model";
+import { handleError } from "../utils";
 
 export async function createUser(
   id: string,
@@ -22,8 +22,7 @@ export async function createUser(
     });
     console.log("Created User");
   } catch (error: any) {
-    console.error(error);
-    throw new Error(`Failed to create user: ${error.message}`);
+    handleError(error);
   }
 }
 
@@ -33,10 +32,11 @@ export async function getUser(email: string) {
 
     console.log("Get User");
 
-    return await User.findOne({ email: email });
+    const user = await User.findOne({ email: email });
+
+    return JSON.parse(JSON.stringify(user));
   } catch (error: any) {
-    console.error(error);
-    throw new Error(`Failed to fetch user: ${error.message}`);
+    handleError(error);
   }
 }
 
@@ -44,12 +44,13 @@ export async function getUserProjects(id: string) {
   try {
     connectToDB();
 
-    return await User.findById(id).populate({
+    const user = User.findById(id).populate({
       path: "projects",
       model: Project,
     });
+
+    return user;
   } catch (error: any) {
-    console.error(error);
-    throw new Error(`Failed to fetch user: ${error.message}`);
+    handleError(error);
   }
 }

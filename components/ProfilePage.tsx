@@ -64,7 +64,7 @@ const ProfilePage = ({ user }: Props) => (
         {user?.projects?.map((project) => (
           <ProjectCard
             key={`${project?._id}`}
-            id={JSON.stringify(project?._id)}
+            id={project?._id}
             image={project?.image}
             title={project?.title}
             name={user.name}

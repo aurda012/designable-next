@@ -47,10 +47,7 @@ const Project = async ({ params: { id } }: { params: { id: string } }) => {
 
         {session?.user?.email === project?.createdBy?.email && (
           <div className="flex justify-end items-center gap-2">
-            <ProjectActions
-              projectId={id}
-              userId={JSON.stringify(session?.user?._id)}
-            />
+            <ProjectActions projectId={id} userId={session?.user?._id} />
           </div>
         )}
       </section>
@@ -103,10 +100,7 @@ const Project = async ({ params: { id } }: { params: { id: string } }) => {
         <span className="w-full h-0.5 bg-light-white-200" />
       </section>
 
-      <RelatedProjects
-        userId={JSON.stringify(session?.user?._id)}
-        projectId={id}
-      />
+      <RelatedProjects userId={session?.user?._id} projectId={id} />
     </Modal>
   );
 };

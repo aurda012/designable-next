@@ -3,9 +3,7 @@ import { redirect } from "next/navigation";
 import Modal from "@/components/Modal";
 import ProjectForm from "@/components/ProjectForm";
 import { getCurrentUser } from "@/lib/session";
-import { ProjectInterface } from "@/common.types";
 import { getProjectDetails } from "@/lib/actions/project.actions";
-import { ObjectId } from "mongoose";
 
 const EditProject = async ({ params: { id } }: { params: { id: string } }) => {
   const session = await getCurrentUser();
@@ -18,7 +16,7 @@ const EditProject = async ({ params: { id } }: { params: { id: string } }) => {
     return <p className="no-result-text">Failed to fetch project info</p>;
 
   const projectObj = {
-    _id: JSON.stringify(project?._id) || "",
+    _id: project?._id || "",
     title: project?.title || "",
     description: project?.description || "",
     image: project?.image || "",

@@ -1,6 +1,5 @@
 "use client";
 
-import { ObjectId } from "mongoose";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -28,14 +27,14 @@ const ProjectCard = ({ id, image, title, name, avatarUrl, userId }: Props) => {
   return (
     <div className="flexCenter flex-col rounded-2xl drop-shadow-card">
       <Link
-        href={`/project/${JSON.parse(id)}`}
+        href={`/project/${id}`}
         className="flexCenter group relative w-full h-full"
       >
         <Image
           src={image}
           width={414}
           height={314}
-          className="w-full h-full object-cover rounded-2xl"
+          className="w-full h-full object-contain rounded-2xl"
           alt="project image"
         />
 
@@ -45,7 +44,7 @@ const ProjectCard = ({ id, image, title, name, avatarUrl, userId }: Props) => {
       </Link>
 
       <div className="flexBetween w-full px-2 mt-3 font-semibold text-sm">
-        <Link href={`/profile/${JSON.parse(userId)}`}>
+        <Link href={`/profile/${userId}`}>
           <div className="flexCenter gap-2">
             <Image
               src={avatarUrl}

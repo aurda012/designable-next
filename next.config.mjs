@@ -4,6 +4,9 @@ const nextConfig = {
     domains: ["lh3.googleusercontent.com", "res.cloudinary.com", "task.com"],
   },
   experimental: {
+    serverActions: {
+      bodySizeLimit: "4mb",
+    },
     serverComponentsExternalPackages: ["cloudinary", "mongoose"],
   },
   eslint: {

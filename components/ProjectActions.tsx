@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ObjectId } from "mongoose";
 import { deleteProject } from "@/lib/actions/project.actions";
 
 type Props = {
